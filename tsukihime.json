@@ -1,0 +1,49 @@
+{
+  "id": "tsukihime",
+  "name": "Tsukihime",
+  "version": "0.1.0",
+  "language": "typescript",
+  "type": "anime-torrent-provider",
+  "description": "Uses the Tsukihime API to find anime torrents.",
+  "author": "Crashdaemon",
+  "icon": "https://raw.githubusercontent.com/Crashdaemon/Seanime-Tsukihime/main/tsukihime.png",
+  "lang": "multi",
+  "userConfig": {
+    "version": 1,
+    "requiresConfig": false,
+    "fields": [
+      {
+        "type": "text",
+        "name": "apiUrl",
+        "label": "Tsukihime API base URL",
+        "default": "https://api.tsukihime.org/v1"
+      },
+      {
+        "type": "switch",
+        "name": "includeAdult",
+        "label": "Include adult (sukebei) results",
+        "default": "false"
+      },
+      {
+        "type": "switch",
+        "name": "fetchSeeders",
+        "label": "Fetch seeders (slower; most Tsukihime torrents have none)",
+        "default": "false"
+      },
+      {
+        "type": "text",
+        "name": "maxResults",
+        "label": "Max results returned per search",
+        "default": "50"
+      },
+      {
+        "type": "text",
+        "name": "searchDepth",
+        "label": "Smart-search scan depth (candidates per search)",
+        "default": "100"
+      }
+    ]
+  },
+  "payloadURI": "https://raw.githubusercontent.com/Crashdaemon/Seanime-Tsukihime/main/tsukihime.ts",
+  "manifestURI": "https://raw.githubusercontent.com/Crashdaemon/Seanime-Tsukihime/main/tsukihime.json"
+}
