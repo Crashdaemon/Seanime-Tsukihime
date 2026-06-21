@@ -132,7 +132,12 @@ function detectBatch(name: string): boolean {
     return BATCH_RE.test(name)
 }
 
+function isSingleEpisodeTorrent(t: TsukihimeTorrent): boolean {
+    return t.filecount === 1
+}
+
 function isBatchTorrent(t: TsukihimeTorrent): boolean {
+    if (isSingleEpisodeTorrent(t)) return false
     return detectBatch(t.name)
 }
 
@@ -151,8 +156,7 @@ function batchContainsEpisode(name: string, ep: number): boolean {
     return true
 }
 
-function parseEpisodeFromName(name: string): number {
-    if (detectBatch(name)) return -1
+function parseEpisodeLoose(name: string): number {
     let m = name.match(/\b[sS]\d{1,2}[eE](\d{1,3})\b/)
     if (m) return parseInt(m[1], 10)
     m = name.match(/(?:^|[^0-9A-Za-z])[eE][pP]?\s?(\d{1,3})(?![0-9A-Za-z])/)
@@ -163,10 +167,20 @@ function parseEpisodeFromName(name: string): number {
 }
 
 function episodeOf(t: TsukihimeTorrent): number {
-    const e = parseEpisodeFromName(t.name)
-    if (e !== -1) return e
-    if (!detectBatch(t.name) && t.episode_no != null) return t.episode_no
-    return -1
+    if (isBatchTorrent(t)) return -1
+    if (t.episode_no != null) return t.episode_no
+    return parseEpisodeLoose(t.name)
+}
+
+function matchesEpisode(t: TsukihimeTorrent, ep: number, offset: number): boolean {
+    if (isBatchTorrent(t)) {
+        return batchContainsEpisode(t.name, ep) || (offset > 0 && batchContainsEpisode(t.name, ep + offset))
+    }
+    if (t.episode_no != null && t.episode_no === ep) return true
+    const np = parseEpisodeLoose(t.name)
+    if (np === ep) return true
+    if (offset > 0 && np === ep + offset) return true
+    return false
 }
 
 function unixToRfc3339(source: number, added: number): string {
@@ -419,9 +433,11 @@ class Provider {
             })
         } else if (opts.episodeNumber && opts.episodeNumber > 0 && !isSingle) {
             const ep = opts.episodeNumber
+            const offset = opts.media.absoluteSeasonOffset && opts.media.absoluteSeasonOffset > 0
+                ? opts.media.absoluteSeasonOffset
+                : 0
             list = list.filter(function (t) {
-                if (isBatchTorrent(t)) return batchContainsEpisode(t.name, ep)
-                return episodeOf(t) === ep
+                return matchesEpisode(t, ep, offset)
             })
         }
 
