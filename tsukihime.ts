@@ -224,12 +224,14 @@ function isAdultTorrent(t: TsukihimeTorrent): boolean {
 function sourceLink(t: TsukihimeTorrent): string {
     if (t.nyaa_id && t.nyaa_id > 0) return "https://nyaa.si/view/" + t.nyaa_id
     if (t.sukebei_id && t.sukebei_id > 0) return "https://sukebei.nyaa.si/view/" + t.sukebei_id
+    if (t.nekobt_id && t.nekobt_id > 0) return "https://nekobt.to/torrents/" + t.nekobt_id
     return "https://tsukihime.org"
 }
 
 function sourceDownloadUrl(t: TsukihimeTorrent): string {
     if (t.nyaa_id && t.nyaa_id > 0) return "https://nyaa.si/download/" + t.nyaa_id + ".torrent"
     if (t.sukebei_id && t.sukebei_id > 0) return "https://sukebei.nyaa.si/download/" + t.sukebei_id + ".torrent"
+    if (t.nekobt_id && t.nekobt_id > 0) return "https://nekobt.to/api/v1/torrents/" + t.nekobt_id + "/download"
     return ""
 }
 
